@@ -18,5 +18,8 @@ setup(
         "pandas",
         "pyyaml",
         "keyring",
+        "gspread",
+        "oauth2client",
+        "six"
     ]
 )
