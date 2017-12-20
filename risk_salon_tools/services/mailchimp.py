@@ -18,7 +18,7 @@ class MailChimpList(MailChimpClient):
         self.list_id = list_id
         self._merge_fields = self.client.lists.merge_fields.get(list_id=self.list_id,
                                                                 merge_id='')
-        self._field_name_doodle = 'DOODLE'
+        self._field_name_topics_survey = 'TOPICSSURV'
 
     def _get_merge_fields_map(self):
         return {x['tag']: x['name'] for x in self._merge_fields['merge_fields']}
@@ -46,13 +46,13 @@ class MailChimpList(MailChimpClient):
                                              subscriber_hash=member_id,
                                              fields="merge_fields")['merge_fields']
 
-    def set_doodle_status(self, member_id, status):
+    def set_topics_survey_status(self, member_id, status):
         assert(status in ['yes', 'no'])
 
         merge_fields = self.get_member_merge_fields(member_id)
 
-        merge_fields[self._field_name_doodle] = status
+        merge_fields[self._field_name_topics_survey] = status
 
-        payload = {'merge_fields':merge_fields}
+        payload = {'merge_fields': merge_fields}
         self.client.lists.members.update(list_id=self.list_id,
                                          subscriber_hash=member_id, data=payload)
