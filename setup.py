@@ -20,6 +20,7 @@ setup(
         "keyring",
         "gspread",
         "oauth2client",
-        "six"
+        "six",
+        "mailchimp3",
     ]
 )
