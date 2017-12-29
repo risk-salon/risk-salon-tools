@@ -30,7 +30,7 @@ class MailChimpList(MailChimpClient):
     def _get_merge_fields_map(self):
         return {x['tag']: x['name'] for x in self._merge_fields['merge_fields']}
 
-    def get_active_members_df(self, map_field_names=True):
+    def active_members(self, map_field_names=True):
         self._members_all = self.client.lists.members.all(list_id=self.list_id)
         members = []
         for mm in self._members_all['members']:
@@ -80,7 +80,7 @@ class MailChimpList(MailChimpClient):
     def _test_format_eventbrite_date(self):
         assert(self._format_eventbrite_date('2017-12-17') == 'SUN, DEC 17TH')
 
-    def get_members_with_eventbrite_orders(self, event_date, event_name):
+    def eventbrite_orders(self, event_date, event_name):
         event_date_formatted = self._format_eventbrite_date(event_date)
 
         def has_product(lines, event_date, event_name):
@@ -89,9 +89,21 @@ class MailChimpList(MailChimpClient):
                 if line_date == event_date and line_name == event_name:
                     return True
 
-        orders = self.client.stores.orders.all(store_id='eventbrite'+self.list_id,
+        all_orders = self.client.stores.orders.all(store_id='eventbrite'+self.list_id,
                                                get_all=True)['orders']
 
-        return [x['customer']['email_address']
-                for x in orders
-                if has_product(x['lines'], event_date_formatted, event_name)]
+        orders = [(x['customer']['email_address'],
+                  ', '.join([y['product_title'] for y in x['lines']]))
+                  for x in all_orders
+                  if has_product(x['lines'], event_date_formatted, event_name)]
+
+        return pd.DataFrame(orders, columns=['email_address', 'order_line_product_titles'])
+
+    def active_members_rsvp_but_no_topics_survey(self, event_date, event_name):
+        active_members = self.active_members()
+        orders = self.eventbrite_orders(event_date, event_name)
+        merged = orders.merge(active_members[['email_address', 'First Name',
+                                     'Last Name', 'Company', 'Title',
+                                     'Topics of interest survey?']])
+        return merged[merged['Topics of interest survey?'] == 'no']
+
