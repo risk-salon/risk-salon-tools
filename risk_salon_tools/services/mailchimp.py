@@ -1,3 +1,5 @@
+# TODO move some of these methods into the community.* namespace
+
 import datetime
 
 import pandas as pd
@@ -31,7 +33,8 @@ class MailChimpList(MailChimpClient):
         return {x['tag']: x['name'] for x in self._merge_fields['merge_fields']}
 
     def active_members(self, map_field_names=True):
-        self._members_all = self.client.lists.members.all(list_id=self.list_id)
+        self._members_all = self.client.lists.members.all(list_id=self.list_id,
+                                                          get_all=True)
         members = []
         for mm in self._members_all['members']:
             m = OrderedDict()
@@ -46,7 +49,10 @@ class MailChimpList(MailChimpClient):
             if m['status'] == 'subscribed':
                 members.append(m)
 
-        return pd.DataFrame(members)
+        members_df = pd.DataFrame(members)
+
+        members_df['email_address'] = members_df['email_address'].str.lower()
+        return members_df
 
     def get_member_merge_fields(self, member_id):
         return self.client.lists.members.get(list_id=self.list_id,
@@ -99,11 +105,15 @@ class MailChimpList(MailChimpClient):
 
         return pd.DataFrame(orders, columns=['email_address', 'order_line_product_titles'])
 
+    def active_members_no_topics_survey(self):
+        active_members = self.active_members()
+        return active_members[active_members['Topics of interest survey?'] != 'yes']
+
     def active_members_rsvp_but_no_topics_survey(self, event_date, event_name):
         active_members = self.active_members()
         orders = self.eventbrite_orders(event_date, event_name)
         merged = orders.merge(active_members[['email_address', 'First Name',
                                      'Last Name', 'Company', 'Title',
                                      'Topics of interest survey?']])
-        return merged[merged['Topics of interest survey?'] == 'no']
+        return merged[merged['Topics of interest survey?'] != 'yes']
 

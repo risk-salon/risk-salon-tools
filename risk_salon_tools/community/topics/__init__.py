@@ -3,9 +3,16 @@ import pandas as pd
 from risk_salon_tools.services.google_docs import SheetsClient
 
 
-def get_responses():
+def _get_all_responses():
     sheets_client = SheetsClient()
     responses = sheets_client.get_df('[Risk Salon] Topics of Interest Survey (Responses)')
-    return pd.concat([responses,
-                      responses['What topics do you find interesting?']\
-                      .str.get_dummies(sep=', ')], axis='columns')
+    responses_df = pd.concat([responses,
+                             responses['What topics do you find interesting?']\
+                             .str.get_dummies(sep=', ')], axis='columns')
+    responses_df['Email Address'] = responses_df['Email Address'].str.lower()
+    return responses_df
+
+def get_latest_responses():
+    return _get_all_responses().sort_values('Timestamp', ascending=False).\
+           groupby('Email Address').nth(0).reset_index().\
+           set_index(['Email Address', 'Name', 'Timestamp']).reset_index()
