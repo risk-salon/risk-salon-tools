@@ -14,6 +14,9 @@ def _get_all_responses():
 
 
 def get_latest_responses():
-    return _get_all_responses().sort_values('Timestamp', ascending=False). \
+    responses = _get_all_responses().sort_values('Timestamp', ascending=False). \
         groupby('Email Address').nth(0).reset_index(). \
         set_index(['Email Address', 'First Name', 'Last Name', 'Timestamp']).reset_index()
+    return responses.drop(['Imported from Doodle?', 'What topics do you find interesting?'],
+                          axis='columns').\
+                          rename(columns={'Timestamp':'Survey Timestamp'})
