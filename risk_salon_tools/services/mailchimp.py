@@ -11,6 +11,11 @@ from risk_salon_tools.services.config import Settings
 from risk_salon_tools.utilities import ordinal_date_suffix
 
 
+def conform_field_names(df):
+    return df.rename(columns={'email_address': 'Email Address',
+                              'id': 'Member ID'})
+
+
 class MailChimpClient(object):
     def __init__(self):
         self.client = MailChimp(Settings().get('mailchimp_username'),
@@ -28,6 +33,8 @@ class MailChimpList(MailChimpClient):
                                                                 merge_id='')
         self._field_name_topics_survey = 'TOPICSSURV'
         self._members_all = None
+
+
 
     def _get_merge_fields_map(self):
         return {x['tag']: x['name'] for x in self._merge_fields['merge_fields']}
@@ -49,9 +56,9 @@ class MailChimpList(MailChimpClient):
             if m['status'] == 'subscribed':
                 members.append(m)
 
-        members_df = pd.DataFrame(members)
+        members_df = conform_field_names(pd.DataFrame(members))
 
-        members_df['email_address'] = members_df['email_address'].str.lower()
+        members_df['Email Address'] = members_df['Email Address'].str.lower()
         return members_df
 
     def get_member_merge_fields(self, member_id):
@@ -103,7 +110,8 @@ class MailChimpList(MailChimpClient):
                   for x in all_orders
                   if has_product(x['lines'], event_date_formatted, event_name)]
 
-        return pd.DataFrame(orders, columns=['email_address', 'order_line_product_titles'])
+        orders_df = pd.DataFrame(orders, columns=['email_address', 'order_line_product_titles'])
+        return conform_field_names(orders_df)
 
     def active_members_no_topics_survey(self):
         active_members = self.active_members()
@@ -112,7 +120,7 @@ class MailChimpList(MailChimpClient):
     def active_members_rsvp_but_no_topics_survey(self, event_date, event_name):
         active_members = self.active_members()
         orders = self.eventbrite_orders(event_date, event_name)
-        merged = orders.merge(active_members[['email_address', 'First Name',
+        merged = orders.merge(active_members[['Email Address', 'First Name',
                                      'Last Name', 'Company', 'Title',
                                      'Topics of interest survey?']])
         return merged[merged['Topics of interest survey?'] != 'yes']
