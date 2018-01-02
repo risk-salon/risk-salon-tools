@@ -22,5 +22,8 @@ setup(
         "oauth2client",
         "six",
         "mailchimp3",
+        "sklearn",
+        "numpy",
+        "matplotlib",
     ]
 )

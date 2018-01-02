@@ -7,8 +7,9 @@ def _get_all_responses():
     sheets_client = SheetsClient()
     responses = sheets_client.get_df('[Risk Salon] Topics of Interest Survey (Responses)')
     responses_df = pd.concat([responses,
-                              responses['What topics do you find interesting?'] \
-                             .str.get_dummies(sep=', ')], axis='columns')
+                              responses['What topics do you find interesting?']
+                              .str.get_dummies(sep=', ').add_prefix('Topic: ')],
+                              axis='columns')
     responses_df['Email Address'] = responses_df['Email Address'].str.lower()
     return responses_df
 
