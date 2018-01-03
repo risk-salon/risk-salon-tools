@@ -12,8 +12,6 @@ def map_fuzzy_keys_to_member_id(other_list, master_list):
 
     other_list_lc = other_list.copy().apply(lambda x: x.astype(str).str.lower())
 
-    print(other_list_lc)
-
     merged_email = other_list_lc['Email Address'].to_frame('Email Address').merge(master_keys_lc, how='left')
     merged_email2 = other_list_lc['Email Address'].to_frame('Email Address 2').merge(master_keys_lc, how='left')
     merged_name = other_list_lc[['First Name', 'Last Name']].merge(master_keys_lc, how='left')
