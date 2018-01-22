@@ -8,15 +8,21 @@ def map_fuzzy_keys_to_member_id(other_list, master_list):
     pk = 'Member ID'
 
     master_keys_lc = master_list[[pk, 'Email Address 2', 'Email Address', 'First Name', 'Last Name']].\
-                    copy().apply(lambda x: x.astype(str).str.lower())
+                     copy().apply(lambda x: x.astype(str).str.lower())
 
     other_list_lc = other_list.copy().apply(lambda x: x.astype(str).str.lower())
 
+    ##TODO need to enforce that all of these are equal size to avoid combine_first making a mess
     merged_email = other_list_lc['Email Address'].to_frame('Email Address').merge(master_keys_lc, how='left')
     merged_email2 = other_list_lc['Email Address'].to_frame('Email Address 2').merge(master_keys_lc, how='left')
     merged_name = other_list_lc[['First Name', 'Last Name']].merge(master_keys_lc, how='left')
+    print(other_list_lc.shape)
+    print(merged_email.shape)
+    print(merged_email2.shape)
+    print(merged_name.shape)
 
     # Assume email more authoritative than name
-    mapped_ids = merged_email[pk].combine_first(merged_email2[pk]).combine_first(merged_name[pk])
+    mapped_ids = merged_email[pk].combine_first(merged_email2[pk])#.combine_first(merged_name[pk])
+    # mapped_ids = merged_email[pk].combine_first(merged_name[pk])
 
-    return pd.concat([mapped_ids, other_list], axis='columns')
+    return pd.concat([mapped_ids, other_list], axis='columns')#, merged_name

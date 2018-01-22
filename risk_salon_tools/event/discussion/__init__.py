@@ -11,7 +11,11 @@ class Groups(object):
     def __init__(self, attendees, topic_prefix='Topic: ', company_col='Company',
                  topics_to_ignore=['Topic: Online risk']):
         self._attendees = attendees
-        self.attendees_grouped = self._attendees.copy()
+
+        if topics_to_ignore is not None:
+            self.attendees_grouped = self._attendees.copy().drop(topics_to_ignore, axis='columns')
+        else:
+            self.attendees_grouped = self._attendees.copy()
 
         self._topic_feature_cols = [x for x in attendees.columns
                                     if topic_prefix in x and
@@ -80,6 +84,7 @@ class Groups(object):
             for group in clusters_to_split:
                 self._fitted_cluster = self._split_cluster(group + increment)
                 increment += 1
+            self.attendees_grouped['Group'] = self._fitted_cluster
 
     def visualize_spatial_distribution(self):
         """intended to be run from within a Jupyter notebook"""
