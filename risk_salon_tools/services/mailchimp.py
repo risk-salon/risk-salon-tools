@@ -6,7 +6,6 @@ import pandas as pd
 from collections import OrderedDict
 from mailchimp3 import MailChimp
 
-
 from risk_salon_tools.services.config import Settings
 from risk_salon_tools.utilities import ordinal_date_suffix
 
