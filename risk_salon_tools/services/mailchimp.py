@@ -1,7 +1,6 @@
 # TODO move some of these methods into the community.* namespace
 
 import datetime
-
 import pandas as pd
 
 from collections import OrderedDict

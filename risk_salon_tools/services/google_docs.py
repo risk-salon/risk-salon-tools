@@ -10,8 +10,9 @@ import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 from risk_salon_tools.services.config import Settings
 
-logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
+# TODO turn on info-level logging only for the Gdrive API
+# logging.basicConfig()
+# logging.getLogger().setLevel(logging.INFO)
 
 # TODO refactor to super-class with authentication
 
