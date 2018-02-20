@@ -10,11 +10,11 @@ import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 from risk_salon_tools.services.config import Settings
 
-# TODO turn on info-level logging only for the Gdrive API
-# logging.basicConfig()
-# logging.getLogger().setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # TODO refactor to super-class with authentication
+
 
 class SheetsClient(object):
     scope = ['https://spreadsheets.google.com/feeds']
@@ -33,6 +33,9 @@ class SheetsClient(object):
 class DriveClient(object):
     scope = 'https://www.googleapis.com/auth/drive'
 
+    logger = logging.getLogger('googleapiclient.discovery')
+    logger.setLevel(logging.INFO)
+
     def __init__(self):
         self.credentials = ServiceAccountCredentials.from_json_keyfile_name(
             Settings().get('google_docs_api_credentials_filepath'), self.scope)
@@ -43,14 +46,14 @@ class DriveClient(object):
         try:
             assert(role in ['writer', 'commenter', 'reader'])
         except AssertionError:
-            logging.error('Invalid role: must be one of writer, commenter, reader.')
+            logger.error('Invalid role: must be one of writer, commenter, reader.')
 
         def callback(request_id, response, exception):
             if exception:
                 # Handle error
-                logging.error(exception)
+                logger.error(exception)
             else:
-                logging.info("Permission Id: %s" % response.get('id'))
+                logger.info("Permission Id: %s" % response.get('id'))
 
 
         # sharing will fail to non-Google accounts
