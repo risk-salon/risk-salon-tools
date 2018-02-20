@@ -59,6 +59,7 @@ class DriveClient(object):
         # sharing will fail to non-Google accounts
         for email_address in email_addresses:
             batch = self.service.new_batch_http_request(callback=callback)
+            logger.info('Trying to give {} {} role.'.format(email_address, role))
             user_permission = {
                 'type': 'user',
                 'role': role,
@@ -70,6 +71,7 @@ class DriveClient(object):
                 fields='id',
             ))
 
+            # TODO better error handling when execute() fails
             batch.execute()
-            logging.info('Gave {} {} role.'.format(email_address, role))
+
             time.sleep(0.05)
