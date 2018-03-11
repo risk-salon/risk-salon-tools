@@ -1,6 +1,7 @@
 # TODO move some of these methods into the community.* namespace
 
 import datetime
+import re
 import pandas as pd
 
 from collections import OrderedDict
@@ -97,7 +98,8 @@ class MailChimpList(MailChimpClient):
 
         def has_product(lines, event_date, event_name):
             for line in lines:
-                line_date, line_name, line_ticket_name = line['product_title'].split(' - ')
+                matches = re.match('^((?:(?!-).)*) - (.*) - (.*)$', line['product_title'])
+                line_date, line_name, line_ticket_name = matches.groups()
                 if line_date == event_date and line_name == event_name:
                     return True
 
