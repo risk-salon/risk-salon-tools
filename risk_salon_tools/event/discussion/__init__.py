@@ -101,9 +101,9 @@ class Groups(object):
                 xy = (x, y))
         plt.show()
 
-    def visualize_topic_popularity(self):
+    def visualize_topic_popularity(self, axis='columns'):
         def highlight_max(s):
             is_max = s == s.max()
             return ['background-color: yellow' if v else '' for v in is_max]
         return (self.attendees_grouped.groupby('Group').mean() * 100).\
-            style.apply(highlight_max, axis=1)
+            style.apply(highlight_max, axis=axis)
