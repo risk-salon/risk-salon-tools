@@ -93,6 +93,10 @@ class MailChimpList(MailChimpClient):
     def _test_format_eventbrite_date(self):
         assert(self._format_eventbrite_date('2017-12-17') == 'SUN, DEC 17TH')
 
+    def _all_eventbrite_orders(self):
+        return self.client.stores.orders.all(store_id='eventbrite'+self.list_id,
+                                             get_all=True)['orders']
+
     def eventbrite_orders(self, event_date, event_name):
         event_date_formatted = self._format_eventbrite_date(event_date)
 
@@ -103,8 +107,7 @@ class MailChimpList(MailChimpClient):
                 if line_date == event_date and line_name == event_name:
                     return True
 
-        all_orders = self.client.stores.orders.all(store_id='eventbrite'+self.list_id,
-                                               get_all=True)['orders']
+        all_orders = self._all_eventbrite_orders()
 
         orders = [(x['customer']['email_address'],
                   ', '.join([y['product_title'] for y in x['lines']]))
