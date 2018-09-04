@@ -18,8 +18,8 @@ def conform_field_names(df):
 
 class MailChimpClient(object):
     def __init__(self):
-        self.client = MailChimp(Settings().get('mailchimp_username'),
-                                Settings().get('mailchimp_api_key'),
+        self.client = MailChimp(Settings().get('mailchimp_api_key'),
+                                Settings().get('mailchimp_username'),
                                 )
 
 
