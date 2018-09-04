@@ -17,7 +17,8 @@ logger.setLevel(logging.INFO)
 
 
 class SheetsClient(object):
-    scope = ['https://spreadsheets.google.com/feeds']
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
 
     def __init__(self):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
